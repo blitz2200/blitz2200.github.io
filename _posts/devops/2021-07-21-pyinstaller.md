@@ -1,23 +1,24 @@
 ---
-title: "FastAPI"
+title: "Pyinstaller 를 이용하여 파이썬 코드 숨기기"
 category:
-  - PYTHON
+  - DEVOPS
 tag:
-  - Web
-  - FastAPI
   - Python
+  - Python 코드 숨기기
+  - Docker
 sidebar_main: true
 author_profile: true
 use_math: true
 published: true
 ---
 
-FastAPI란?
-
-> FastAPI는 현대적이고, 빠르며(고성능), 파이썬 표준 타입 힌트에 기초한 Python3.6+의 API를 빌드하기 위한 웹 프레임워크입니다. (공홈 참고)
+Pyinstaller란?
 
 
-## 1. FastAPI 설치
+py 파일을 실행파일로 만들어주는 프로그램이다.  실행파일로 만들어 주는 동시에 파이썬 코드를 볼 수 없기에 파이썬 코드를 숨겨서 배포하고자 할 경우에 유용하다.  덕분에 꽤 크고 많은 프로젝트에 두루 쓰이는 듯 하다.  [여기에 가면 어디에 쓰였는지 볼 수 있다.](https://github.com/pyinstaller/pyinstaller/wiki/Projects-Using-PyInstaller){: target="_blank"}
+
+
+## 1. Pyinstaller 설치
 
 ```console
 $ pip install fastapi
