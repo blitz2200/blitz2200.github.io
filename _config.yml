@@ -101,10 +101,10 @@ analytics:
 
 # Site Author
 author:
-  name             : "Hun's Note"
+  name             : "진시훈"
   avatar           : # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
   bio              : "Work with **Joy**, Dinner with **Family!**"
-  location         : "낮-강남, 밤-위례"
+  location         : "위례"
   email            :
   links:
     - label: "Email"
