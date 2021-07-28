@@ -20,18 +20,20 @@ py 파일을 실행파일로 만들어주는 프로그램이다.  실행파일�
 
 ## PyPI에서 Pyinstaller 설치
 
-```console
+```zsh
 $ pip install pyinstaller
 ```
 
 ## Pyinstaller 실행
 
-```console
+```zsh
 $ pyinstaller main.py
 ```
 
-위의 명령줄을 실행하면 build와 dist 폴더에 아래와 같이 결과물 파일들이 생성된다.  
+위의 명령줄을 실행하면 build와 dist 폴더에 아래와 같이 결과물 파일들이 생성된다. 
+
 ![pyinstaller_bundle_sample](/images/pyinstaller_bundle_sample.png)
+
 dist 폴더 내의 main 파일이 실행파일이다. (MacOS 기준)
 
 build 폴더는 빌드과정에서 쓰인 파일들이라 필요없고 dist폴더내의 다른 파일들은 전부 다 있어야 제대로 실행된다. 번잡해 보이지만 다행히 pyinstaller 는 아래와 같은 몇 가지 유용한 옵션들을 제공한다.
@@ -46,7 +48,7 @@ build 폴더는 빌드과정에서 쓰인 파일들이라 필요없고 dist폴�
 
 [pyinstaller 공식문서 참조](https://pyinstaller.readthedocs.io/en/latest/){: target="_blank"}
 
-```console
+```zsh
 $ pyinstaller -F main.py
 ```
 
@@ -58,7 +60,7 @@ $ pyinstaller -F main.py
 
 pyenv 를 사용하여 python을 설치하여 사용하는 경우 빌드 자체는 잘 되지만 실행 파일을 실행 하는 경우 아래와 같이 main.py 파일 내에서 다른 모듈을 import 하고 있는 경우 아래와 같이 그 의존성을 찾지 못하는 에러가 난다. 생성된 파일의 용량 또한 정상적으로 빌드됐을 때 보다 현저하게 작다.
 
-```console
+```zsh
 Traceback (most recent call last):
   File "main.py", line 1, in <module>
 ModuleNotFoundError: No module named 'flask'
@@ -81,7 +83,7 @@ ModuleNotFoundError: No module named 'flask'
             except yaml.YAMLError as e:
                 print(e)
 ```
-```console
+```zsh
 $ pyinstaller --add-data "conf/application.yml:conf" ./main.py
 ```
 그러면 dist 디렉토리 내에 conf 라는 디렉토리를 만들고 그 안에 application.yml 파일을 같이 포함 시켜 준다. 그런데 여기서 문제가 하나 있다. -F 옵션으로 하나의 파일로 패키징 하게 되면 해당 파일을 찾지 못하는 에러가 난다.
@@ -116,7 +118,7 @@ def print_file(file_path):
 if __name__ == '__main__':
     print_file('data_files/data.txt')
 ```
-```console
+```zsh
 $ pyinstaller --onefile --add-data="data_files/data.txt;data_files" myScript.py
 ```
 [스텍 오버 플로우 질문글 참조](https://stackoverflow.com/questions/51060894/adding-a-data-file-in-pyinstaller-using-the-onefile-option?answertab=votes#tab-top){:target="_blank"}
@@ -125,6 +127,6 @@ $ pyinstaller --onefile --add-data="data_files/data.txt;data_files" myScript.py
 
 파이썬 스크립트 내에서는 import 된 것이 보이지 않지만 쓰이는 모듈들이 있다. 그런 모듈의 경우 dist 에 산출물로 포함되지 않아 모듈을 찾지 못한다는 에러가 나는 경우가 있는데 이런 경우 --hidden-import 옵션을 이용해 주면 된다.
 
-```console
+```zsh
 $ pyinstaller --hidden-import module_name main.py
 ```
