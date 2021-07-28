@@ -1,10 +1,10 @@
 ---
-title: "맥북프로 M1에서 PYCHARM으로 개발환경 설정하기"
+title: "맥북프로 M1에서 PyCharm으로 개발환경 설정하기"
 category:
   - PYTHON
 tag:
   - Python
-  - PYCHARM
+  - PyCharm
   - Virtualenv
   - venv
   
@@ -76,15 +76,29 @@ $ deactivate  #이미 가상환경내의 bin 폴더가 PATH로 잡혀 있으므�
 $ 
 ```
 
-## PYCHARM 으로 가상 환경 구성
+## PyCharm 에서 Virtualenv를 이용한 가상 환경 구성
 
 * 기존 프로젝트에서 가상 환경 구성
 
-기존 프로젝트를 PYCHARM 에서 열면 오른쪽 하단에 아래 그림과 같이 python version 나와있는 곳을 눌러 interpreter settings... 라고 되어 있는 context 메뉴를 클릭한다. preference 에서 python interpreter 로 검색 해도 된다.
+기존 프로젝트를 PyCharm 에서 열면 오른쪽 하단에 아래 그림과 같이 python version 나와있는 곳을 눌러 interpreter settings... 라고 되어 있는 context 메뉴를 클릭한다. preference 에서 python interpreter 로 검색 해도 된다.
 
 ![pycharm_tray](/images/pycharm_interpreter_tray.png)
 
 
+창 우측 상단의 톱니 버튼을 눌러 나온 context 메뉴의 Add... 를 클릭한다.
 
-![pycharm_interpreter_setting1](/images/pycharm_interpreter_setting1.png)
+![pycharm_interpreter_setting](/images/pycharm_interpreter_setting.png)
+
+그러면 아래와 같이 여러 형태의 가상환경을 만들 수 있는 창이 뜬다.
+
+![pycharm_interpreter_add](/images/pycharm_interpreter_add.png)
+
+PyCharm 에는 Virtualenv 가 번들로 포함되어 있어서 Virtualenv를 따로 설치하지 않아도 Virtualenv 를 이용하여 가상 환경을 잡아줄 수 있다. New environment 의 Location 에는 가상환경의 폴더 위치를 지정해 주고 Base interpreter 에서 원하는 파이썬 바이너리를 선택해 준다. 시스템에 설치된 파이썬을 선택할 수도 있고 pyenv 를 이용해 설치한 파이썬 바이너리를 선택할 수도 있다. 물론 Existing environment를 선택해 기존에 생성한 가상환경을 선택할 수 도 있다.
+
 * 새 프로젝트 만들면서 가상 환경 구성
+
+새 프로젝트를 만들 때에도 아래와 같이 가상환경 설정이 가능하다.
+
+![pycharm_create_project](/images/pycharm_create_project.png)
+
+## PyCharm 에서 Docker / Docker Compose 를 이용한 가상 환경 구성
