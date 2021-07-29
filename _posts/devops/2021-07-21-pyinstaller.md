@@ -32,7 +32,7 @@ $ pyinstaller main.py
 
 위의 명령줄을 실행하면 build와 dist 폴더에 아래와 같이 결과물 파일들이 생성된다. 
 
-![pyinstaller_bundle_sample](/images/pyinstaller_bundle_sample.png)
+![pyinstaller_bundle_sample](/images/pyinstaller_bundle_sample.png){:.align-center width="30%"}
 
 dist 폴더 내의 main 파일이 실행파일이다. (MacOS 기준)
 

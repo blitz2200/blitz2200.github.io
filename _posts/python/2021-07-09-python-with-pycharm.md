@@ -1,7 +1,7 @@
 ---
 title: "맥북프로 M1에서 PyCharm으로 개발환경 설정하기"
 categories:
-  - python
+  - PYTHON
 tags:
   - Python
   - PyCharm
@@ -57,7 +57,7 @@ $ python -m venv venv
 첫번째 venv 는 venv라는 파이썬 모듈이름이고 뒤의 이름은 지정하고자 하는 가상환경의 폴더이름이다.
 쉘에서 위 명령을 실행하면 venv 라는 폴더가 생성되고 아래와 같은 파일들이 생성된다.<br><br>
 
-![venv_filetree](/images/pycharm_venv_filetree.png)
+![venv_filetree](/images/pycharm_venv_filetree.png){:.align-center width="30%"}
 
 디렉토리 구조를 보면 venv/bin 아래에 실행파일들이 있고 dependency들이 설치 되는 venv/lib/python3.x/site-packages 폴더가 있다.
 가상환경이 생성은 되었지만 현재 쉘에서 그 가상환경에 진입하도록 활성화를 시켜 주어야 한다. 그러지 않으면 그냥 이 상태로 쉘에서 python 명령을 치거나 pip install을 했을때 가상환경에 있는 python 을 사용하지 않고 쉘의 path에 등록된 python을 사용하게 된다.
@@ -81,16 +81,16 @@ $
 
 기존 프로젝트를 PyCharm 에서 열면 오른쪽 하단에 아래 그림과 같이 python version 나와있는 곳을 눌러 interpreter settings... 라고 되어 있는 context 메뉴를 클릭한다. preference 에서 python interpreter 로 검색 해도 된다.
 
-![pycharm_tray](/images/pycharm_interpreter_tray.png)
+![pycharm_tray](/images/pycharm_interpreter_tray.png){:.align-center width="30%"}
 
 
 창 우측 상단의 톱니 버튼을 눌러 나온 context 메뉴의 Add... 를 클릭한다.
 
-![pycharm_interpreter_setting](/images/pycharm_interpreter_setting.png)
+![pycharm_interpreter_setting](/images/pycharm_interpreter_setting.png){:.align-center width="80%"}
 
 그러면 아래와 같이 여러 형태의 가상환경을 만들 수 있는 창이 뜬다.
 
-![pycharm_interpreter_add](/images/pycharm_interpreter_add.png)
+![pycharm_interpreter_add](/images/pycharm_interpreter_add.png){:.align-center width="80%"}
 
 PyCharm 에는 Virtualenv 가 번들로 포함되어 있어서 Virtualenv를 따로 설치하지 않아도 Virtualenv 를 이용하여 가상 환경을 잡아줄 수 있다. New environment 의 Location 에는 가상환경의 폴더 위치를 지정해 주고 Base interpreter 에서 원하는 파이썬 바이너리를 선택해 준다. 시스템에 설치된 파이썬을 선택할 수도 있고 pyenv 를 이용해 설치한 파이썬 바이너리를 선택할 수도 있다. 물론 Existing environment를 선택해 기존에 생성한 가상환경을 선택할 수 도 있다.
 
@@ -98,6 +98,6 @@ PyCharm 에는 Virtualenv 가 번들로 포함되어 있어서 Virtualenv를 따
 
 새 프로젝트를 만들 때에도 아래와 같이 가상환경 설정이 가능하다.
 
-![pycharm_create_project](/images/pycharm_create_project.png)
+![pycharm_create_project](/images/pycharm_create_project.png){:.align-center width="80%"}
 
 # PyCharm 에서 Docker / Docker Compose 를 이용한 가상 환경 구성
