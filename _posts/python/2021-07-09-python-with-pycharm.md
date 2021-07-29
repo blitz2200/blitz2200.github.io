@@ -1,20 +1,19 @@
 ---
 title: "맥북프로 M1에서 PyCharm으로 개발환경 설정하기"
-category:
-  - PYTHON
-tag:
+categories:
+  - python
+tags:
   - Python
   - PyCharm
   - Virtualenv
   - venv
-  
 sidebar_main: false
 author_profile: true
 use_math: true
 published: true
 ---
 
-## 파이썬 설치
+# 파이썬 설치
 
 파이썬2, 파이썬3… 어떤버전을 써야할까 고민하지 말라고 누가 pyenv 라는걸 만들어 놨다. 다양한 버전의 파이썬을 설치하고 골라서 쓸수 있게 해주는 거다. sdkman 이나 nvm과 비슷한 거다. 맥에서는 brew로 설치하면 편하다.
 ```zsh
@@ -38,7 +37,7 @@ $ pyenv local 3.9.6      # 실행한 폴더 내에 .python-version 파일이 생
                          #  해당폴더 내에서는 .python-version 내에 명시된 python 버전이 사용됨   
 ````
 
-## 가상환경 구성
+# 가상환경 구성
 
 파이썬에는 가상 환경이라는게 있다. 노드의 node_modules 폴더처럼 프로젝트별로 디펜던시를 관리할 수 있게 해주는 것으로 이해하면 편하다. 프로젝트 마다 진행된 시기별로 다양한 버전의 라이브러리를 가져다 쓸텐데 각 시기별로 쓰인 라이브러리가 최신라이브러리와는 호환이 안되는 등 디펜던시들이 꼬이는 일이 생길 수 있는데 가상환경을 사용하면 프로젝트별로 독립적으로 환경을 잡아주므로 위의 문제에서 자유롭다. 가상환경 잡는 방법은 꽤나 다양하다.
 
@@ -47,7 +46,7 @@ $ pyenv local 3.9.6      # 실행한 폴더 내에 .python-version 파일이 생
 * conda : Anaconda Python을 설치했을 시 사용할 수있는 모듈
 * pyenv : pyenv의 경우 Python Version Manger임과 동시에 가상환경 기능을 플러그인 형태로 제공<br><br>
 
-#### venv를 이용하여 가상환경 잡기
+## venv를 이용하여 가상환경 잡기
 <br>
 가상 환경을 잡을 경로에 가서 아래 명령을 실행한다.<br><br>
 
@@ -76,7 +75,7 @@ $ deactivate  #이미 가상환경내의 bin 폴더가 PATH로 잡혀 있으므�
 $ 
 ```
 
-## PyCharm 에서 Virtualenv를 이용한 가상 환경 구성
+# PyCharm 에서 Virtualenv를 이용한 가상 환경 구성
 
 * 기존 프로젝트에서 가상 환경 구성
 
@@ -101,4 +100,4 @@ PyCharm 에는 Virtualenv 가 번들로 포함되어 있어서 Virtualenv를 따
 
 ![pycharm_create_project](/images/pycharm_create_project.png)
 
-## PyCharm 에서 Docker / Docker Compose 를 이용한 가상 환경 구성
+# PyCharm 에서 Docker / Docker Compose 를 이용한 가상 환경 구성
