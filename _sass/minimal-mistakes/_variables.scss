@@ -12,11 +12,21 @@ $doc-font-size: 16 !default;
 $paragraph-indent: false !default; // true, false (default)
 $indent-var: 1.3em !default;
 
+/* Custom font */
+@font-face {
+   font-family: 'Montez';
+   font-style: normal;
+   font-weight: 400;
+   src: local('Montez'), url('/assets/font/Montez-Regular.ttf');
+}
+
 /* system typefaces */
 $serif: Georgia, Times, serif !default;
-$sans-serif: -apple-system, BlinkMacSystemFont, "Roboto", "Segoe UI",
+$sans-serif: -apple-system, BlinkMacSyste``mFont, "Roboto", "Segoe UI",
   "Helvetica Neue", "Lucida Grande", Arial, sans-serif !default;
 $monospace: Monaco, Consolas, "Lucida Console", monospace !default;
+$montez: "Montez" !default;
+
 
 /* sans serif typefaces */
 $sans-serif-narrow: $sans-serif !default;
