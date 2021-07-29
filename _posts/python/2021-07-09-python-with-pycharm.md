@@ -31,11 +31,11 @@ echo 'eval "$(pyenv init -)"' >> ~/.zshrc
 사용법은 쉽다.
 
 ````zsh
-$ pyenv install -l       //설치 가능한 목록을 표시
-$ pyenv install 3.9.6    //해당 버전을 설치한다. 설치되는 경로는 ~/.pyenv/versions
-$ cat ~/.pyenv/versions  //설치된 버전 조회
-$ pyenv local 3.9.6      //실행한 폴더 내에 .python-version 파일이 생성되며
-                         // 해당폴더 내에서는 .python-version 내에 명시된 python 버전이 사용됨   
+$ pyenv install -l       # 설치 가능한 목록을 표시
+$ pyenv install 3.9.6    # 해당 버전을 설치한다. 설치되는 경로는 ~/.pyenv/versions
+$ cat ~/.pyenv/versions  # 설치된 버전 조회
+$ pyenv local 3.9.6      # 실행한 폴더 내에 .python-version 파일이 생성되며
+                         #  해당폴더 내에서는 .python-version 내에 명시된 python 버전이 사용됨   
 ````
 
 ## 가상환경 구성
