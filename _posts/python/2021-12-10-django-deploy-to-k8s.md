@@ -4,8 +4,12 @@ categories:
   - PYTHON
 tags:
   - Python
+  - 파이썬
   - django
+  - 장고
   - kubernetes
+  - k8s
+  - 쿠버네티스
   - nginx
 sidebar_main: false
 author_profile: true
@@ -15,130 +19,266 @@ published: false
 
 # [Django 배포하기](https://docs.djangoproject.com/ko/3.2/howto/deployment/){: target="_blank"}
 
-웹 프레임워크인 Django는 작동하기 위해 웹 서버가 필요합니다. 그리고 대부분의 웹 서버는 기본적으로 Python을 사용하지 않기 때문에, 우리는 그러한 커뮤니케이션이 이루어지도록 인터페이스가 필요합니다.
+웹 프레임워크인 Django는 작동하기 위해 웹 서버가 필요하다. 그리고 대부분의 웹 서버는 기본적으로 Python을 사용하지 않기 때문에, 우리는 Django와 웹서버 사이의 커뮤니케이션이 이루어지도록 인터페이스가 필요하다.
 
-Django는 현재 WSGI와 ASGI의 두 가지 인터페이스를 지원합니다.
+Django는 현재 WSGI(Web Server Gateway Interface)와 ASGI(Asynchronous Server Gateway Interface)의 두 가지 인터페이스를 지원한다.
 * WSGI는 웹 서버와 애플리케이션 간의 통신을 위한 주요 파이썬 표준이지만 동기식 코드만 지원한다.
-* ASGI는 당신의 Django 사이트에서 비동기 Python 기능과 비동기 Django 기능을 개발하면서 사용할 수 있게 해주는 새로운 비동기 친화적인 표준이다.
+* ASGI는 Django 사이트에서 비동기 Python 기능과 비동기 Django 기능을 개발하면서 사용할 수 있게 해주는 새로운 비동기 친화적인 표준이다.
 
-ASGI는 request/response로 이루어진 WSGI와 달리 send/ receive 로 되어 있어 비동기적으로 이벤트 처리가 가능하다. 그로인해 여러 송수신 이벤트가 가능하다. WSGI의 상위 집합으로 설계되어있으며 asgiref 라이브러리를 통해 ASGI 서버 내에서 WSGI를 실행 할 수도 있다고 한다.
+ASGI는 request/response로 이루어진 WSGI와 달리 send/ receive 로 되어 있어 비동기적으로 이벤트 처리가 가능하다. 그로인해 여러 송수신 이벤트가 가능하다. 또한 WSGI의 상위 집합으로 설계되어있으며 asgiref 라이브러리를 통해 ASGI 서버 내에서 WSGI를 실행 할 수도 있다고 한다.
 
 우리는 비동기 친화적이면서 WSGI와 호환도 되는 [ASGI](https://asgi.readthedocs.io/en/latest/introduction.html){: target="_blank"}를 사용하기로 한다.
 
 [ASGI와 WSGI 분석](https://nitro04.blogspot.com/2020/01/django-python-asgi-wsgi-analysis-of.html){: target="_blank"}
 
-아래는 Gunicorn 공홈에 있는 문구이다.
-> Gunicorn 'Green Unicorn' is a Python WSGI HTTP Server for UNIX. It's a pre-fork worker model.
-> The Gunicorn server is broadly compatible with various web frameworks,
-> simply implemented, light on server resources, and fairly speedy.
 
 
 
 
 # ASGI를 사용하여 배포하는 방법
 
-Django에는 다음 ASGI 서버에 대한 시작 설명서가 포함되어 있습니다.
+Django에는 다음 ASGI 서버에 대한 시작 설명서가 포함되어 있다.
 * [다프네와 함께 django를 사용하는 방법](https://docs.djangoproject.com/ko/3.2/howto/deployment/asgi/daphne/){: target="_blank"}
 * [하이퍼콘과 함께 짱고를 사용하는 방법](https://docs.djangoproject.com/ko/3.2/howto/deployment/asgi/hypercorn/){: target="_blank"}
 * [django와 유비콘 사용방법](https://docs.djangoproject.com/ko/3.2/howto/deployment/asgi/uvicorn/){: target="_blank"}
 
-[어느 방법을 쓸것인가?](https://stackoverflow.com/questions/61700881/django-3-x-which-asgi-server-uvicorn-vs-daphne){: target="_blank"} 를 참고하여 가볍고 심플한 uvicorn을 사용하기로 한다.
-Uvicorn은 속도를 중시하는 《uvloop》과 《http tools》에 기반을 둔 ASGI 서버이다. 그리고 Uvicorn은 프로세스 매니져가 아니고 gunicorn의 워커로 쓰인다.
+[어느 방법을 쓸것인가?](https://stackoverflow.com/questions/61700881/django-3-x-which-asgi-server-uvicorn-vs-daphne){: target="_blank"} 
+
+위 링크를 참고하여 가볍고 심플한 uvicorn을 사용하기로 한다.
+
+Uvicorn은 속도를 중시하는 《uvloop》과 《http tools》에 기반을 둔 ASGI 서버이다. 그리고 Uvicorn은 프로세스 매니저가 아니고 gunicorn의 워커로 쓰인다.
 
 
-# GUNICORN, NGINX
+# GUNICORN 그리고 NGINX
 
-gunicorn만 있어도 http request를 처리할순있지만,gunicorn에는 없고 nginx에는 있는 기능떄문에 둘을 연동해서 쓴다.
-1. djangodml media, css등 static한 요청은 직접처리하고 다이나믹한 요청을 gunicorn에 넘긴다. 지유니콘으로 넘어가는순간 자원사용이 크게늘어 스태틱한 요청을 따로 처리해주는게 중요하다.
+> Gunicorn 'Green Unicorn' is a Python WSGI HTTP Server for UNIX. It's a pre-fork worker model.
+> The Gunicorn server is broadly compatible with various web frameworks,
+> simply implemented, light on server resources, and fairly speedy.
 
-2. nginx는 c로 구현되어 속도와 메모리 사용측면에서 뛰어나다.
-둘을 연동하면 동시에 많은 요청을 처리할수있고, 훨씬 안정화된 서버를 구축할수 있게된다.
+위는 Gunicorn 공홈에 있는 문구이다.
 
-Django 의 runserver 는 단일 프로세스 , 단일쓰레드라 nginx에서 아무리 많은 요청을 처리해도 결국 django 내장서버에서 병목이 생긴다)
+Gunicorn은 Python WSGI로 WEB Server(Nginx, Apache 등)로부터 서버사이드 요청을 받으면 WSGI (또는 ASGI)를 통해 서버 애플리케이션(Django, Flask 등)으로 전달해주는 역할을 수행한다. Django의 runserver 역시도 똑같은 역할을 수행하지만 단일 프로세스, 단일 쓰레드라서 production 환경에서는 사용하기에는 맞지 않다.(개발용으로는 유용하다)
 
+gunicorn의 프로세스는 프로세스 기반의 처리 방식을 채택하고 있으며, 이는 내부적으로 크게 master process와 worker process로 나뉘어 집니다. gunicorn이 실행되면, 그 프로세스 자체가 master process이며, fork(완전히 분리된 *nix 프로세스)를 사용하여 설정에 부여된 worker 수대로 worker process가 생성 됩니다. master process는 worker process를 관리하는 역할을 하고, worker process는 웹어플리케이션을 임포트하며, 요청을 받아 웹어플리케이션 코드로 전달하여 처리하도록 하는 역할을 한다.
 
+gunicorn만 있어도 http request를 처리할 수는 있지만, Gunicorn에는 없고 nginx에는 있는 기능 때문에 보통 둘을 연동해서 쓴다.
+1. Django media, css등 static한 요청은 직접처리하고 다이나믹한 요청을 gunicorn에 넘긴다. Gunicorn으로 넘어가는 순간 자원사용이 크게늘어 스태틱한 요청을 따로 처리해주는게 중요하다.
+
+2. nginx는 c로 구현되어 속도와 메모리 사용 측면에서 뛰어나다.
+둘을 연동하면 동시에 많은 요청을 처리할 수 있고, 훨씬 안정화 된 서버를 구축 할 수 있게 된다.
+
+# Django 앱을 위한 docker-compose
+
+도커를 이용해서 Django 앱을 배포하고 앞단에 proxy로 nginx를 붙여주기 위해서 docker-compose 같은 서비스를 이용하여 묶어줄 수 있다.
+
+Django는 runserver를 이용시 기본적으로 css나 image 같은 static 파일들을 static이라는 경로에 모아놓고 serve 한다. 하지만 Gunicorn 을 사용하고 nginx를 앞단에 붙여 static파일을 serve 하게 하려면 ```python3 manage.py collectstatic```  를 이용해 static 파일들을 특정경로 - {project_root}/.static_root 에 모아주고 해당 파일들을 /static 이라는 URL로 serve 할 수 있도록 nginx 도 설정을 해 주어야 한다.
+
+아래의 nginx 설정파일을 nginx 컨테이너의 /etc/nginx/conf.d 경로에 추가되도록 아래와 같이 설정한다.
+
+* nginx.conf
 ```zsh
-$ brew update
-$ brew install pyenv
-```
+upstream django {
+    ip_hash;
+    server 127.0.0.1:8000;
+}
 
-설치 후 쓰고 있는 쉘에 맞게 설정을 해줘야 한다.<br>
-Zsh 의 경우 아래를 입력하고 엔터.
+server {
+    listen 80;
+
+    location / {
+        proxy_pass http://django;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location /static/ {
+        alias /static/;
+    }
+}
+```
+* Dockerfile
+```dockerfile
+FROM --platform=linux/amd64 python:3.8.11
+RUN apt-get update && apt-get upgrade -y
+ENV PYTHONUNBUFFERED=1
+WORKDIR /app
+COPY requirements.txt ./
+RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
+COPY . .
+```
+* docker-compose.yaml
 ```zsh
-echo 'eval "$(pyenv init -)"' >> ~/.zshrc
+version: "2"
+services:
+  telstar-auth:
+    image: telstar-auth
+    container_name : telstar-auth
+    volumes: 
+      -  path-to-static_root:/app/.static_root
+    command: > 
+      bash -c "python3 manage.py makemigrations
+      && python3 manage.py migrate
+      && python3 manage.py collectstatic --noinput
+      && gunicorn config.asgi:application -b 0.0.0.0:8000 -k uvicorn.workers.UvicornWorker"
+    ports: 
+      - "8000:8000"
+  nginx:
+    image: nginx
+    container_name : nginx
+    volumes: 
+      - path-to-config:/etc/nginx/conf.d
+      - path-to-static_root/:/static
+    ports:
+      - "80:80"
+    depends_on : 
+      - telstar-auth
 ```
+telstar-auth 서비스의 path-to-static_root 경로와 nginx 서비스의 path-to-static_root 는 Host의 같은 경로를 가리킴에 주의 한다.
 
-사용법은 쉽다.
-
-````zsh
-$ pyenv install -l       # 설치 가능한 목록을 표시
-$ pyenv install 3.9.6    # 해당 버전을 설치한다. 설치되는 경로는 ~/.pyenv/versions
-$ cat ~/.pyenv/versions  # 설치된 버전 조회
-$ pyenv local 3.9.6      # 실행한 폴더 내에 .python-version 파일이 생성되며
-                         #  해당폴더 내에서는 .python-version 내에 명시된 python 버전이 사용됨   
-````
-
-# 가상환경 구성
-
-파이썬에는 가상 환경이라는게 있다. 노드의 node_modules 폴더처럼 프로젝트별로 디펜던시를 관리할 수 있게 해주는 것으로 이해하면 편하다. 프로젝트 마다 진행된 시기별로 다양한 버전의 라이브러리를 가져다 쓸텐데 각 시기별로 쓰인 라이브러리가 최신라이브러리와는 호환이 안되는 등 디펜던시들이 꼬이는 일이 생길 수 있는데 가상환경을 사용하면 프로젝트별로 독립적으로 환경을 잡아주므로 위의 문제에서 자유롭다. 가상환경 잡는 방법은 꽤나 다양하다.
-
-* venv : venv는 virtualenv의 subset, Python 3.3 버전 이후 부터 기본모듈에 포함됨
-* virtualenv : Python 2 버전부터 사용해오던 가상환경 라이브러리, Python 3에서도 사용가능
-* conda : Anaconda Python을 설치했을 시 사용할 수있는 모듈
-* pyenv : pyenv의 경우 Python Version Manger임과 동시에 가상환경 기능을 플러그인 형태로 제공<br><br>
-
-## venv를 이용하여 가상환경 잡기
-<br>
-가상 환경을 잡을 경로에 가서 아래 명령을 실행한다.<br><br>
-
+docker-compose.yaml 파일 내의 command 부분을 좀 더 들여다 보겠다.
 ```zsh
-$ python -m venv venv
+gunicorn config.asgi:application -b 0.0.0.0:8000 -k uvicorn.workers.UvicornWorker
 ```
+위 command를 보면 Gunicorn을 이용해 Django 앱을 실행시키고 있으며 worker로 uvicornWorker를 지정해 주었다. 물론 requirements.txt 내에 gunicorn uvicorn 이 기술 되어 있어 도커 이미지 내에서 해당 파이썬 패키지가 설치 되어 있어야 함에 주의 한다. gunicorn 뒤에 config.asgi:application으로 적어주는 이유는 ```django-admin startproject app_name```으로 Django 앱 스케폴딩시 생성되는 해당 앱 내의 asgi.py 내의 application을 가리키기 위함이고(위 예제에서는 앱이름이 config 이다.) -b 옵션으로 ip 및 포트를 바인딩 해 준다.
 
-첫번째 venv 는 venv라는 파이썬 모듈이름이고 뒤의 이름은 지정하고자 하는 가상환경의 폴더이름이다.
-쉘에서 위 명령을 실행하면 venv 라는 폴더가 생성되고 아래와 같은 파일들이 생성된다.<br><br>
 
-![venv_filetree](/images/pycharm_venv_filetree.png){:.align-center width="30%"}
 
-디렉토리 구조를 보면 venv/bin 아래에 실행파일들이 있고 dependency들이 설치 되는 venv/lib/python3.x/site-packages 폴더가 있다.
-가상환경이 생성은 되었지만 현재 쉘에서 그 가상환경에 진입하도록 활성화를 시켜 주어야 한다. 그러지 않으면 그냥 이 상태로 쉘에서 python 명령을 치거나 pip install을 했을때 가상환경에 있는 python 을 사용하지 않고 쉘의 path에 등록된 python을 사용하게 된다.
-아래 명령어로 가상환경을 활성화 해 준다.
-
-```zsh
-$ source venv/bin/activate   #쉘에 맞는 것을 선택해서 실행
-(venv) $ 
+# Django 앱을 위한 쿠버네티스 Manifest
+* Deployment
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: telstar-auth
+  namespace: telstar
+  labels:
+    app: telstar-auth
+    project: telstar-auth
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: telstar-auth #관리할 Pod의 검색조건
+  template:
+    metadata:
+      labels:
+        app: telstar-auth #생성할 Pod의 라벨
+        project: telstar-auth
+        service-name : telstar-auth  #grafana dashboard 조회용
+    spec:
+      containers: 
+      - name: telstar-auth-django
+        image: docker.enkis.co.kr/telstar-auth:latest
+        envFrom:
+          - secretRef:
+              name: telstar-auth-secret
+          - configMapRef:
+              name: telstar-auth-configmap
+        volumeMounts:
+        - name: telstar-auth-static
+          mountPath: /app/.static_root
+        - name: telstar-auth-nginx-config
+          mountPath: /app/nginx-config
+        - name: telstar-auth-log
+          mountPath: /app/logs
+        ports:
+        - containerPort: 8000
+        command: ['/bin/bash']
+        args: ["-c", "python3 manage.py makemigrations && python3 manage.py migrate
+          && python3 manage.py collectstatic --no-input && gunicorn config.asgi:application
+       --bind 0.0.0.0:8000 -k uvicorn.workers.UvicornWorker"]
+      - name: telstar-auth-nginx
+        image: nginx
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+          - mountPath: /static
+            name: nginx-static
+          - mountPath: /etc/nginx/conf.d
+            name: nginx-config
+          - mountPath: /var/log/nginx
+            name: nginx-log
+        ports:
+          - containerPort: 80
+      imagePullSecrets:
+        - name: enkis-nexus
+      nodeSelector:
+        process-unit-kind: cpu
+        site: telstar
+      volumes:
+        - name: telstar-auth-static #shared
+          hostPath:
+            path: /home/ubuntu/telstar-auth/static
+        - name: telstar-auth-nginx-config #shared
+          hostPath:
+            path: /home/ubuntu/telstar-auth/nginx-config
+        - name: telstar-auth-log
+          hostPath:
+            path: /home/ubuntu/telstar-auth/nginx-log
+        - name: nginx-static #shared
+          hostPath:
+            path: /home/ubuntu/telstar-auth/static
+        - name: nginx-config #shared
+          hostPath:
+            path: /home/ubuntu/telstar-auth/nginx-config
+        - name: nginx-log
+          hostPath:
+            path: /home/ubuntu/telstar-auth/django-log
 ```
-
-가상환경이 활성화 되면 위와 같이 쉘 명령프롬프트 앞에 가상환경이름이 괄호와 함께 붙는다. 다시 비활성화 하고 싶다면
-
-```zsh
-$ deactivate  #이미 가상환경내의 bin 폴더가 PATH로 잡혀 있으므로 경로에 상관없이 실행가능
-$ 
+* Service
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: telstar-auth
+  namespace: telstar
+  labels:
+    app: telstar-auth
+spec:
+  type: NodePort
+  selector:
+    app: telstar-auth
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      nodePort: 30000
 ```
+* ConfigMap
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: telstar-auth-configmap
+  namespace: telstar
+data:
+  DEBUG: 'False'
+  ALLOWED_HOSTS: '*'
+  ACCESS_TOKEN_LIFETIME_MINUTES: '5'
+  REFRESH_TOKEN_LIFETIME_DAYS: '1'
+```
+* Secret
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: telstar-auth-secret
+  namespace: telstar
+type: Opaque
+data:
+  DB_ENGINE: ZGphbm--base64 encoded value--cmVzcWw=
+  DB_NAME: dV--base64 encoded value--cg==
+  DB_HOST: dGVsc--base64 encoded value--5jb20=
+  DB_USER: cG--base64 encoded value--XM=
+  DB_PASSWORD: RW8--base64 encoded value--SUnk=
+  JWT_SIGNING_KEY: dGVs--base64 encoded value--a2V5
+```
+Django에서 사용하는 env파일은 필요한 보안 정도에 따라 secret(PW,SECRET KEY 등)과 configmap(DEBUG, ALLOWED HOST등) 으로 나누어 설정 한다.
 
-# PyCharm 에서 Virtualenv를 이용한 가상 환경 구성
-
-* 기존 프로젝트에서 가상 환경 구성
-
-기존 프로젝트를 PyCharm 에서 열면 오른쪽 하단에 아래 그림과 같이 python version 나와있는 곳을 눌러 interpreter settings... 라고 되어 있는 context 메뉴를 클릭한다. preference 에서 python interpreter 로 검색 해도 된다.
-
-![pycharm_tray](/images/pycharm_interpreter_tray.png){:.align-center width="30%"}
 
 
-창 우측 상단의 톱니 버튼을 눌러 나온 context 메뉴의 Add... 를 클릭한다.
 
-![pycharm_interpreter_setting](/images/pycharm_interpreter_setting.png){:.align-center width="80%"}
 
-그러면 아래와 같이 여러 형태의 가상환경을 만들 수 있는 창이 뜬다.
 
-![pycharm_interpreter_add](/images/pycharm_interpreter_add.png){:.align-center width="80%"}
-
-PyCharm 에는 Virtualenv 가 번들로 포함되어 있어서 Virtualenv를 따로 설치하지 않아도 Virtualenv 를 이용하여 가상 환경을 잡아줄 수 있다. New environment 의 Location 에는 가상환경의 폴더 위치를 지정해 주고 Base interpreter 에서 원하는 파이썬 바이너리를 선택해 준다. 시스템에 설치된 파이썬을 선택할 수도 있고 pyenv 를 이용해 설치한 파이썬 바이너리를 선택할 수도 있다. 물론 Existing environment를 선택해 기존에 생성한 가상환경을 선택할 수 도 있다.
-
-* 새 프로젝트 만들면서 가상 환경 구성
-
-새 프로젝트를 만들 때에도 아래와 같이 가상환경 설정이 가능하다.
-
-![pycharm_create_project](/images/pycharm_create_project.png){:.align-center width="80%"}
-
-# PyCharm 에서 Docker / Docker Compose 를 이용한 가상 환경 구성
+참고링크 [Django 프로젝트 K8S 배포하기](https://velog.io/@seokbin/Django-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-K8S-%EB%B0%B0%ED%8F%AC%ED%95%98%EA%B8%B0){: target="_blank"}
