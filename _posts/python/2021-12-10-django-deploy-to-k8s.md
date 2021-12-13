@@ -31,10 +31,6 @@ ASGI는 request/response로 이루어진 WSGI와 달리 send/ receive 로 되어
 
 [ASGI와 WSGI 분석](https://nitro04.blogspot.com/2020/01/django-python-asgi-wsgi-analysis-of.html){: target="_blank"}
 
-
-
-
-
 # ASGI를 사용하여 배포하는 방법
 
 Django에는 다음 ASGI 서버에 대한 시작 설명서가 포함되어 있다.
@@ -101,6 +97,7 @@ server {
     }
 }
 ```
+
 * Dockerfile
 
 ```dockerfile
@@ -149,8 +146,6 @@ gunicorn config.asgi:application -b 0.0.0.0:8000 -k uvicorn.workers.UvicornWorke
 ```
 위 command를 보면 Gunicorn을 이용해 Django 앱을 실행시키고 있으며 worker로 uvicornWorker를 지정해 주었다. 물론 requirements.txt 내에 gunicorn uvicorn 이 기술 되어 있어 도커 이미지 내에서 해당 파이썬 패키지가 설치 되어 있어야 함에 주의 한다. gunicorn 뒤에 config.asgi:application으로 적어주는 이유는 ```django-admin startproject app_name```으로 Django 앱 스케폴딩시 생성되는 해당 앱 내의 asgi.py 내의 application을 가리키기 위함이고(위 예제에서는 앱이름이 config 이다.) -b 옵션으로 ip 및 포트를 바인딩 해 준다.
 
-
-
 # Django 앱을 쿠버네티스에 배포하기
 
 Django에서 사용하는 env파일은 필요한 보안 정도에 따라 secret(PW,SECRET KEY 등)과 configmap(DEBUG, ALLOWED HOST등) 으로 나누어 설정 한다.
@@ -161,6 +156,7 @@ docker-compose 와 마찬가지로 Django앱 앞단에 nginx 프록시 서버가
 아래 Manifest 들을 참조하여 설정한다.
 
 * Deployment
+
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -240,7 +236,9 @@ spec:
           hostPath:
             path: /home/ubuntu/telstar-auth/django-log
 ```
+
 * Service
+
 ```yaml
 apiVersion: v1
 kind: Service
@@ -259,7 +257,9 @@ spec:
       targetPort: 80
       nodePort: 30000
 ```
+
 * ConfigMap
+
 ```yaml
 apiVersion: v1
 kind: ConfigMap
@@ -272,7 +272,9 @@ data:
   ACCESS_TOKEN_LIFETIME_MINUTES: '5'
   REFRESH_TOKEN_LIFETIME_DAYS: '1'
 ```
+
 * Secret
+
 ```yaml
 apiVersion: v1
 kind: Secret
@@ -288,10 +290,5 @@ data:
   DB_PASSWORD: RW8--base64 encoded value--SUnk=
   JWT_SIGNING_KEY: dGVs--base64 encoded value--a2V5
 ```
-
-
-
-
-
 
 참고링크 [Django 프로젝트 K8S 배포하기](https://velog.io/@seokbin/Django-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-K8S-%EB%B0%B0%ED%8F%AC%ED%95%98%EA%B8%B0){: target="_blank"}
