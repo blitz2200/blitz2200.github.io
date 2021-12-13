@@ -102,6 +102,7 @@ server {
 }
 ```
 * Dockerfile
+
 ```dockerfile
 FROM --platform=linux/amd64 python:3.8.11
 RUN apt-get update && apt-get upgrade -y
@@ -112,6 +113,7 @@ RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 COPY . .
 ```
 * docker-compose.yaml
+
 ```zsh
 version: "2"
 services:
@@ -138,6 +140,7 @@ services:
     depends_on : 
       - telstar-auth
 ```
+
 telstar-auth 서비스의 path-to-static_root 경로와 nginx 서비스의 path-to-static_root 는 Host의 같은 경로를 가리킴에 주의 한다.
 
 docker-compose.yaml 파일 내의 command 부분을 좀 더 들여다 보겠다.
