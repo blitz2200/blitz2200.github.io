@@ -14,7 +14,7 @@ tags:
 sidebar_main: false
 author_profile: true
 use_math: true
-published: false
+published: true
 ---
 
 # [Django 배포하기](https://docs.djangoproject.com/ko/3.2/howto/deployment/){: target="_blank"}
@@ -59,17 +59,19 @@ Uvicorn은 속도를 중시하는 《uvloop》과 《http tools》에 기반을 
 
 Gunicorn은 Python WSGI로 WEB Server(Nginx, Apache 등)로부터 서버사이드 요청을 받으면 WSGI (또는 ASGI)를 통해 서버 애플리케이션(Django, Flask 등)으로 전달해주는 역할을 수행한다. Django의 runserver 역시도 똑같은 역할을 수행하지만 단일 프로세스, 단일 쓰레드라서 production 환경에서는 사용하기에는 맞지 않다.(개발용으로는 유용하다)
 
-gunicorn의 프로세스는 프로세스 기반의 처리 방식을 채택하고 있으며, 이는 내부적으로 크게 master process와 worker process로 나뉘어 집니다. gunicorn이 실행되면, 그 프로세스 자체가 master process이며, fork(완전히 분리된 *nix 프로세스)를 사용하여 설정에 부여된 worker 수대로 worker process가 생성 됩니다. master process는 worker process를 관리하는 역할을 하고, worker process는 웹어플리케이션을 임포트하며, 요청을 받아 웹어플리케이션 코드로 전달하여 처리하도록 하는 역할을 한다.
+gunicorn의 프로세스는 프로세스 기반의 처리 방식을 채택하고 있으며, 이는 내부적으로 크게 master process와 worker process로 나뉘어 진다. gunicorn이 실행되면, 그 프로세스 자체가 master process이며, fork(완전히 분리된 *nix 프로세스)를 사용하여 설정에 부여된 worker 수대로 worker process가 생성 된다. master process는 worker process를 관리하는 역할을 하고, worker process는 웹어플리케이션을 임포트하며, 요청을 받아 웹어플리케이션 코드로 전달하여 처리하도록 하는 역할을 한다.
 
 gunicorn만 있어도 http request를 처리할 수는 있지만, Gunicorn에는 없고 nginx에는 있는 기능 때문에 보통 둘을 연동해서 쓴다.
-1. Django media, css등 static한 요청은 직접처리하고 다이나믹한 요청을 gunicorn에 넘긴다. Gunicorn으로 넘어가는 순간 자원사용이 크게늘어 스태틱한 요청을 따로 처리해주는게 중요하다.
+1. Django media, css등 static한 요청은 nginx에서 처리하고 다이나믹한 요청을 gunicorn에 넘긴다. Gunicorn으로 넘어가는 순간 자원사용이 크게늘어 스태틱한 요청을 따로 처리해주는게 중요하다.
 
-2. nginx는 c로 구현되어 속도와 메모리 사용 측면에서 뛰어나다.
-둘을 연동하면 동시에 많은 요청을 처리할 수 있고, 훨씬 안정화 된 서버를 구축 할 수 있게 된다.
+2. nginx는 c로 구현되어 속도와 메모리 사용 측면에서 뛰어나다. 둘을 연동하면 동시에 많은 요청을 처리할 수 있고, 훨씬 안정화 된 서버를 구축 할 수 있게 된다.
 
-# Django 앱을 위한 docker-compose
+3. Gunicorn 팀에서 Nginx와 함께 사용하도록 권장하고 있다.
 
-도커를 이용해서 Django 앱을 배포하고 앞단에 proxy로 nginx를 붙여주기 위해서 docker-compose 같은 서비스를 이용하여 묶어줄 수 있다.
+
+# Django 앱을 docker-compose로 배포하기
+
+도커를 이용해서 Django 앱을 배포하고 앞단에 proxy server로써 nginx를 붙여주기 위해서 docker-compose 같은 서비스를 이용하여 묶어줄 수 있다.
 
 Django는 runserver를 이용시 기본적으로 css나 image 같은 static 파일들을 static이라는 경로에 모아놓고 serve 한다. 하지만 Gunicorn 을 사용하고 nginx를 앞단에 붙여 static파일을 serve 하게 하려면 ```python3 manage.py collectstatic```  를 이용해 static 파일들을 특정경로 - {project_root}/.static_root 에 모아주고 해당 파일들을 /static 이라는 URL로 serve 할 수 있도록 nginx 도 설정을 해 주어야 한다.
 
@@ -145,7 +147,15 @@ gunicorn config.asgi:application -b 0.0.0.0:8000 -k uvicorn.workers.UvicornWorke
 
 
 
-# Django 앱을 위한 쿠버네티스 Manifest
+# Django 앱을 쿠버네티스에 배포하기
+
+Django에서 사용하는 env파일은 필요한 보안 정도에 따라 secret(PW,SECRET KEY 등)과 configmap(DEBUG, ALLOWED HOST등) 으로 나누어 설정 한다.
+docker-compose 와 마찬가지로 Django앱 앞단에 nginx 프록시 서버가 붙도록 Pod를 구성해준다.
+
+.static_root 폴더와 nginx 설정파일이 있는 폴더를 nginx 컨테이너와 django 컨테이너 양쪽에서 접근 가능한 볼륨으로 잡아 nginx 에서 static 파일들을 serve 하게 해주고 그 외의 Request들은 reverse proxy로 django 컨테이너로 포워딩 되도록 해주는 것이 키포인트이다. 
+
+아래 Manifest 들을 참조하여 설정한다.
+
 * Deployment
 ```yaml
 apiVersion: apps/v1
@@ -160,13 +170,13 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: telstar-auth #관리할 Pod의 검색조건
+      app: telstar-auth
   template:
     metadata:
       labels:
-        app: telstar-auth #생성할 Pod의 라벨
+        app: telstar-auth
         project: telstar-auth
-        service-name : telstar-auth  #grafana dashboard 조회용
+        service-name : telstar-auth
     spec:
       containers: 
       - name: telstar-auth-django
@@ -274,7 +284,6 @@ data:
   DB_PASSWORD: RW8--base64 encoded value--SUnk=
   JWT_SIGNING_KEY: dGVs--base64 encoded value--a2V5
 ```
-Django에서 사용하는 env파일은 필요한 보안 정도에 따라 secret(PW,SECRET KEY 등)과 configmap(DEBUG, ALLOWED HOST등) 으로 나누어 설정 한다.
 
 
 
