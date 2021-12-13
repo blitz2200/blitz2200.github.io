@@ -78,6 +78,7 @@ Django는 runserver를 이용시 기본적으로 css나 image 같은 static 파�
 아래의 nginx 설정파일을 nginx 컨테이너의 /etc/nginx/conf.d 경로에 추가되도록 아래와 같이 설정한다.
 
 * nginx.conf
+
 ```zsh
 upstream django {
     ip_hash;
