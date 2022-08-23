@@ -85,9 +85,9 @@ needs: 해당 job이 실행 되기 전에 충족해야 하는 의존성으로 �
 
 steps: job 은 순차적으로 실행되는 여러 스텝으로 이루어 진다.
 
-    name: 해당 스텝의 이름이다. 적절한 이름을 붙여준다.  
-    uses: 어떠한 action을 쓸지 적어준다. 필요한 action 목록은 [GitHub Marketplace: actions to improve your workflow](https://docs.github.com/en/actions/hosting-your-own-runners/about-self-hosted-runners){: target="_blank"} 에서 찾을수 있다.  
-    with: 해당 action에서 필요한 설정값들을 적어준다. 필요한 설정값은 action 마다 다르며 해당 action 의 상세 페이지를 참고한다.
+  * name: 해당 스텝의 이름이다. 적절한 이름을 붙여준다.  
+  * uses: 어떠한 action을 쓸지 적어준다. 필요한 action 목록은 [GitHub Marketplace: actions to improve your workflow](https://docs.github.com/en/actions/hosting-your-own-runners/about-self-hosted-runners){: target="_blank"} 에서 찾을수 있다.  
+  * with: 해당 action에서 필요한 설정값들을 적어준다. 필요한 설정값은 action 마다 다르며 해당 action 의 상세 페이지를 참고한다.
 
 {% raw %}
 변수 부분은 ${{  변수  }} 로 표현할 수 있으며 ${{ github.sha }}  의 형태로 github에서 제공하는 sha  를 변수로 제공받을 수 있다. secrets.   으로 접근하면 해당 repository 나 organization 의 Settings > Security > Secrets 에 정의되는 변수에 접근 가능하다.
