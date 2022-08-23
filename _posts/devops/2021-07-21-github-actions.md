@@ -87,6 +87,6 @@ uses: 어떠한 action을 쓸지 적어준다. 필요한 action 목록은 GitHub
 
 with: 해당 action에서 필요한 설정값들을 적어준다. 필요한 설정값은 action 마다 다르며 해당 action 의 상세 페이지를 참고한다.
 
-
-
+{% raw %}
 변수 부분은 ${{  변수  }} 로 표현할 수 있으며 ${{ github.sha }}  의 형태로 github에서 제공하는 sha  를 변수로 제공받을 수 있다. secrets.   으로 접근하면 해당 repository 나 organization 의 Settings > Security > Secrets 에 정의되는 변수에 접근 가능하다.
+{% endraw %}
