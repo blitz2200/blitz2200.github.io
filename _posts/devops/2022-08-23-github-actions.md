@@ -79,7 +79,7 @@ jobs: 실행할 일들을 목록으로 추가할 수 있다. 위 예제에서는
 
 name: 해당 Job의 이름이다. 적절한 이름을 붙여준다.
 
-runs-on: 해당 action이 실행될 runner 이다. 위 예제에서는 ubuntu-20.04 runner가 지정되어 있다. 정해진 runner 외에 사용자가 직접 만든 costom runner 또한 설정 가능하다. About self-hosted runners - GitHub Docs  여기를 참고한다.
+runs-on: 해당 action이 실행될 runner 이다. 위 예제에서는 ubuntu-20.04 runner가 지정되어 있다. 정해진 runner 외에 사용자가 직접 만든 costom runner 또한 설정 가능하다. [About self-hosted runners - GitHub Docs](https://docs.github.com/en/actions/hosting-your-own-runners/about-self-hosted-runners) 여기를 참고한다.
 
 needs: 해당 job이 실행 되기 전에 충족해야 하는 의존성으로 위 예제에서는 build step 이다.
 
